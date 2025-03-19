@@ -1,9 +1,11 @@
 import numpy as np
+from .crypto_base import CryptoBase
 
-class RecursiveTesseractHash:
+class RecursiveTesseractHash(CryptoBase):
     def __init__(self, dimensions=4, iterations=3):
-        self.dimensions = dimensions
+        super().__init__(dimensions)
         self.iterations = iterations
+        self.tesseract = np.random.rand(16, 16)
 
     def generate_tesseract(self):
         # Generate tesseract vertices in n-dimensional space

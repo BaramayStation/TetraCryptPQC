@@ -1,0 +1,89 @@
+# TetraCryptPQC Stress Test Configuration
+
+# FIPS 140-3 Compliance Parameters
+fips:
+  key_sizes:
+    rsa: 3072
+    ecc: 384
+    aes: 256
+    sha: 384
+  rng_test:
+    sample_size: 1000000
+    entropy_threshold: 7.9
+    mean_range: [127.1, 127.9]
+    std_range: [73, 75]
+
+# Load Testing Parameters
+load:
+  base_url: "http://localhost:5000"
+  concurrent_requests: 1000
+  test_duration: 300  # seconds
+  success_threshold: 0.99
+  max_latency: 0.5  # seconds
+  endpoints:
+    - path: "/api/encrypt"
+      method: "POST"
+      weight: 0.4
+    - path: "/api/decrypt"
+      method: "POST"
+      weight: 0.3
+    - path: "/api/verify"
+      method: "POST"
+      weight: 0.3
+
+# Podman Security Parameters
+podman:
+  containers:
+    - name: "tetracrypt-backend"
+      memory_limit: "4G"
+      cpu_limit: "2.0"
+    - name: "tetracrypt-llm"
+      memory_limit: "8G"
+      cpu_limit: "4.0"
+      gpu_limit: "1"
+    - name: "tetracrypt-frontend"
+      memory_limit: "2G"
+      cpu_limit: "1.0"
+  security_options:
+    - "no-new-privileges:true"
+    - "seccomp=unconfined"
+    - "apparmor=unconfined"
+
+# LLM Security Parameters
+llm:
+  model_name: "bert-base-uncased"
+  max_memory_overhead: 0.1  # 10%
+  test_data_size: 1000
+  sanitization_checks:
+    tensor_size: [1000, 1000]
+    cleanup_threshold: 0.001
+
+# Network Resilience Parameters
+network:
+  yggdrasil:
+    peers_minimum: 3
+    health_check_interval: 30  # seconds
+    failover_timeout: 5  # seconds
+  backup_nodes:
+    - "node1.backup.tetracrypt:5000"
+    - "node2.backup.tetracrypt:5000"
+    - "node3.backup.tetracrypt:5000"
+  partition_test:
+    duration: 30  # seconds
+    ports: [5000, 5050, 5100]
+
+# Monitoring Parameters
+monitoring:
+  metrics_interval: 5  # seconds
+  alert_thresholds:
+    cpu_usage: 0.9  # 90%
+    memory_usage: 0.85  # 85%
+    error_rate: 0.01  # 1%
+    latency: 500  # ms
+
+# Reporting Parameters
+reporting:
+  log_level: "INFO"
+  report_format: "detailed"  # [summary, detailed]
+  save_artifacts: true
+  artifact_retention: 30  # days 

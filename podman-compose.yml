@@ -1,0 +1,103 @@
+version: '3.8'
+
+services:
+  pqc_backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    image: tetracrypt-backend:latest
+    container_name: tetracrypt-pqc-backend
+    ports:
+      - "5000:5000"
+    environment:
+      - NODE_ENV=production
+      - PQC_SECURITY_LEVEL=256
+      - CLIFFORD_DIMENSION=4
+    security_opt:
+      - "no-new-privileges:true"
+      - "seccomp=unconfined"
+    volumes:
+      - ./backend:/app
+      - pqc_keys:/app/keys
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  web3_frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    image: tetracrypt-frontend:latest
+    container_name: tetracrypt-web3-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - WEBGPU_BACKEND=true
+      - STARKNET_NETWORK=mainnet
+    depends_on:
+      - pqc_backend
+    volumes:
+      - ./frontend:/app
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  starknet_node:
+    image: starknet/starknet-devnet:latest
+    container_name: tetracrypt-starknet
+    ports:
+      - "5050:5050"
+    environment:
+      - STARKNET_NETWORK=alpha-mainnet
+      - STARKNET_WALLET_URL=http://localhost:5050
+    volumes:
+      - starknet_data:/root/.starknet
+    command: ["--host", "0.0.0.0", "--port", "5050", "--seed", "42"]
+
+  ai_security:
+    build:
+      context: ./ai
+      dockerfile: Dockerfile
+    image: tetracrypt-ai:latest
+    container_name: tetracrypt-ai-security
+    ports:
+      - "5100:5100"
+    environment:
+      - CUDA_VISIBLE_DEVICES=0
+      - AI_MODEL_PATH=/models
+      - QUATERNION_DIMENSION=4
+    volumes:
+      - ./ai:/app
+      - ai_models:/models
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+volumes:
+  pqc_keys:
+    driver: local
+    driver_opts:
+      type: tmpfs
+      device: tmpfs
+      o: "size=100m,uid=1000"
+  starknet_data:
+    driver: local
+  ai_models:
+    driver: local
+
+networks:
+  tetracrypt_net:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.28.0.0/16 

@@ -1,9 +1,12 @@
 import numpy as np
 from scipy.spatial import ConvexHull
+from .crypto_base import CryptoBase
 
-class QIDLEncryption:
-    def __init__(self, dimension=4):
-        self.dimension = dimension
+class QIDLEncryption(CryptoBase):
+    def __init__(self, dimensions=4):
+        super().__init__(dimensions)
+        self.polyhedral_lattice = np.random.rand(12, 20)
+        self.dimension = dimensions
 
     def create_icosahedral_structure(self):
         # Generate icosahedral points in n-dimensional space

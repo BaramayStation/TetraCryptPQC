@@ -1,7 +1,0 @@
-numpy
-scipy
-sympy
-pycryptodome
-matplotlib
-networkx
-pytest

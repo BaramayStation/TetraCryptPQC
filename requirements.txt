@@ -1,2 +1,44 @@
-# Base requirements
-python-dotenv
+# Core dependencies
+python-dotenv==0.20.0
+numpy==1.23.4
+scipy==1.10.0
+sympy==1.12.1
+
+# Cryptography
+oqs==0.10.2
+pycryptodome==3.17.0
+slh-dsa==1.2.0
+
+# Visualization & Networking
+matplotlib==3.8.3      # 3D visualization of polyhedral encryption structures
+networkx==3.2.1        # Graph-based cryptographic key exchange
+
+# TetraCryptPQC Nexus project
+pyyggdrasil
+
+# Testing
+pytest==8.0.0          # Ensures secure validation of encryption functions
+
+# Clifford Algebra & Advanced Mathematics
+clifford==1.4.0
+galois==0.3.0
+quaternion==3.5.0
+
+# Web3 & Blockchain
+web3==6.15.1
+eth-account==0.11.0
+solidity-flattener==0.3.0
+
+# Advanced Visualization
+three.js==0.160.1
+webgpu-utils==0.1.0
+plotly==5.18.0
+
+# AI Components
+torch==2.2.0
+tensorflow==2.15.0
+transformers==4.38.1
+
+# Zero-Trust Security
+pyOpenSSL==24.0.0
+cryptography==42.0.0

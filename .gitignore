@@ -1,0 +1,22 @@
+# Ignore virtual environment
+venv/
+.env
+
+# Ignore build artifacts
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pyc
+
+# Ignore logs and temporary files
+*.log
+*.tmp
+
+# Ignore IDE-specific files
+.vscode/
+.idea/
+
+# Ignore Podman and Docker artifacts
+*.tar
+*.gz

@@ -1,0 +1,83 @@
+groups:
+- name: TetraCryptPQC_Alerts
+  rules:
+  - alert: ServiceDown
+    expr: up == 0
+    for: 1m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Service {{ $labels.job }} is down"
+      description: "Service {{ $labels.job }} has been down for more than 1 minute"
+
+  - alert: HighCPUUsage
+    expr: rate(process_cpu_seconds_total[5m]) * 100 > 80
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High CPU usage on {{ $labels.job }}"
+      description: "CPU usage is above 80% for 5 minutes"
+
+  - alert: HighMemoryUsage
+    expr: (process_resident_memory_bytes / container_memory_usage_bytes) * 100 > 85
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High memory usage on {{ $labels.job }}"
+      description: "Memory usage is above 85% for 5 minutes"
+
+  - alert: SlowAPIResponse
+    expr: http_request_duration_seconds{quantile="0.9"} > 2
+    for: 5m
+    labels:
+      severity: warning
+    annotations:
+      summary: "Slow API responses on {{ $labels.job }}"
+      description: "90th percentile of HTTP requests is taking more than 2 seconds"
+
+  - alert: HighErrorRate
+    expr: rate(http_requests_total{status=~"5.."}[5m]) / rate(http_requests_total[5m]) * 100 > 5
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      summary: "High error rate on {{ $labels.job }}"
+      description: "Error rate is above 5% for 5 minutes"
+
+  - alert: StarkNetNodeSync
+    expr: starknet_block_height - starknet_latest_block > 10
+    for: 5m
+    labels:
+      severity: critical
+    annotations:
+      summary: "StarkNet node is out of sync"
+      description: "StarkNet node is more than 10 blocks behind"
+
+  - alert: AIModelPerformanceDegradation
+    expr: ai_model_accuracy < 0.95
+    for: 10m
+    labels:
+      severity: warning
+    annotations:
+      summary: "AI model performance degradation"
+      description: "AI model accuracy has dropped below 95%"
+
+  - alert: CryptographicOperationFailure
+    expr: rate(crypto_operation_failures_total[5m]) > 0
+    for: 1m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Cryptographic operation failures detected"
+      description: "There are failed cryptographic operations in the last 5 minutes"
+
+  - alert: UnauthorizedAccessAttempt
+    expr: rate(unauthorized_access_attempts_total[5m]) > 10
+    for: 1m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Multiple unauthorized access attempts detected"
+      description: "More than 10 unauthorized access attempts in 5 minutes" 
